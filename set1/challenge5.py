@@ -5,7 +5,9 @@ def encrypt_repeating_key_xor(plaintext: bytes, key: bytes) -> bytes:
     return bytes(byte ^ key for byte, key in zip(plaintext, cycle(key)))
 
 
-testInput = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+testInput = (
+    b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+)
 testKey = b"ICE"
 c = encrypt_repeating_key_xor(testInput, testKey)
 expectedOutput = (

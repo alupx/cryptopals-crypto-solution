@@ -1,10 +1,20 @@
-from challenge3 import decryptEnglishSingleByteXOR
+from challenge3 import decrypt_english_single_byte_xor
 
-bestScore = 0
-with open("4.txt", 'r') as file:
-    for line in file:
-        score, plaintext = decryptEnglishSingleByteXOR(line.strip())
-        if score > bestScore:
-            bestText = plaintext
-            bestScore = score
-            print(score, plaintext)
+
+def find_and_decrypt_single_byte_xor_in_file(filename: str) -> str:
+    bestScore = 0
+    with open(filename, "r") as file:
+        for line in file:
+            score, plaintext = decrypt_english_single_byte_xor(
+                bytes.fromhex(line.strip())
+            )
+            if score > bestScore:
+                bestText = plaintext
+                bestScore = score
+    return bestText
+
+
+inputFile = "4.txt"
+testOutput = "Now that the party is jumping\n"
+assert find_and_decrypt_single_byte_xor_in_file(inputFile) == testOutput
+print("Passed")

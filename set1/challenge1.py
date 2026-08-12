@@ -1,44 +1,46 @@
-base64Alphabet = (
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/"
-)
+base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
-def hexToBase64(hex: str) -> str:
+
+def binary_to_base64(input: bytes) -> str:
+    def encode_byte_triplet(triplet: bytes) -> str:
+        value = triplet[0] << 16 | triplet[1] << 8 | triplet[2]
+        return (
+            base64Alphabet[(value & 0xFC0000) >> 18]
+            + base64Alphabet[(value & 0x3F000) >> 12]
+            + base64Alphabet[(value & 0xFC0) >> 6]
+            + base64Alphabet[(value & 0x3F)]
+        )
+
     base64Str = ""
-   
-    for i in range(0, len(hex), 6):
-        # First byte
-        firstByte = int(hex[i:i+2], 16)
-        firstB64 = firstByte >> 2
-        base64Str += base64Alphabet[firstB64]
-       
-        # Second byte
-        secondB64 = ((firstByte & 0b00000011) << 4)
-        if i+4 <= len(hex):
-            secondByte = int(hex[i+2:i+4], 16)
-            secondB64 |= (secondByte  >> 4)
-            base64Str += base64Alphabet[secondB64]
+    for i in range(0, len(input), 3):
+        if i + 3 <= len(input):
+            triplet = input[i : i + 3]
+            toRemove = 0
+        elif i + 2 <= len(input):
+            triplet = input[i : i + 2] + b"\x00"
+            toRemove = 1
         else:
-            base64Str += base64Alphabet[secondB64]
-            base64Str += "=="
-            break
-        
-        # Third byte
-        thirdB64 = ((secondByte & 0b00001111) << 2)
-        if i+6 <= len(hex):
-            thirdByte = int(hex[i+4:i+6], 16)
-            thirdB64 |= (thirdByte  >> 6)
-            fourthB64 = thirdByte & 0b00111111
-            base64Str += base64Alphabet[thirdB64]
-            base64Str += base64Alphabet[fourthB64]
-        else:
-            base64Str += base64Alphabet[thirdB64]
-            base64Str += "="
-
+            triplet = input[i : i + 1] + b"\x00\x00"
+            toRemove = 2
+        base64Str += encode_byte_triplet(triplet)
+    if toRemove:
+        base64Str = base64Str[:-toRemove]
+        base64Str += "=" * toRemove
     return base64Str
 
-testInput = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
-testOutput = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
-assert hexToBase64(testInput) == testOutput
 
+testInput = bytes.fromhex(
+    "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+)
+testOutput = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
+assert binary_to_base64(testInput) == testOutput
+
+testInput = bytes.fromhex("42424242")
+testOutput = "QkJCQg=="
+assert binary_to_base64(testInput) == testOutput
+
+testInput = bytes.fromhex("4242")
+testOutput = "QkI="
+assert binary_to_base64(testInput) == testOutput
+
+print("Passed")
