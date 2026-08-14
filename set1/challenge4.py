@@ -2,13 +2,13 @@ from challenge3 import decrypt_english_single_byte_xor
 
 
 def find_and_decrypt_single_byte_xor_in_file(filename: str) -> str:
-    bestScore = 0
+    bestScore = float('inf')
     with open(filename, "r") as file:
         for line in file:
-            score, plaintext = decrypt_english_single_byte_xor(
+            score, _, plaintext = decrypt_english_single_byte_xor(
                 bytes.fromhex(line.strip())
             )
-            if score > bestScore:
+            if score < bestScore:
                 bestText = plaintext
                 bestScore = score
     return bestText
