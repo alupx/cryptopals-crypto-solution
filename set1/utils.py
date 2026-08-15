@@ -29,6 +29,7 @@ letter_frequency_english = {
     "z": 0.001,
 }
 
+
 def plaintext_score(s: str) -> float:
     s_letter_frequency = defaultdict(float)
     letters_count = 0
@@ -37,10 +38,10 @@ def plaintext_score(s: str) -> float:
         if c.lower() in letter_frequency_english:
             s_letter_frequency[c.lower()] += 1
             letters_count += 1
-        elif 32<=ord(c)<=126 or ord(c)==10:
-            score += 20/len(s)
+        elif 32 <= ord(c) <= 126 or ord(c) == 10:
+            score += 20 / len(s)
         else:
-            return float('inf')
+            return float("inf")
     for c in s_letter_frequency:
         s_letter_frequency[c] /= letters_count
 

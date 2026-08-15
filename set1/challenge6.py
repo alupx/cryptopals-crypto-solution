@@ -1,7 +1,4 @@
-import base64
-
 from challenge3 import decrypt_english_single_byte_xor
-from challenge5 import encrypt_repeating_key_xor
 from utils import hamming_distance
 
 
@@ -25,7 +22,9 @@ def guess_key_length(
     return hamming_distances
 
 
-def decode(cryptotext: bytes, key_len: int) -> tuple[bytes, str]:
+def decrypt_english_multi_byte_xor(
+    cryptotext: bytes, key_len: int
+) -> tuple[bytes, str]:
     key = []
     plaintext = [" "] * len(cryptotext)
     for i in range(key_len):
@@ -37,13 +36,3 @@ def decode(cryptotext: bytes, key_len: int) -> tuple[bytes, str]:
             j += key_len
         key.append(k)
     return bytes(key), "".join(plaintext)
-
-
-b64text = ""
-with open("data/6.txt", "r") as file:
-    for line in file:
-        b64text += line
-
-cryptotext = base64.b64decode(b64text)
-print(hamming_distance(b"this is a test", b"wokka wokka!!!"))
-print(decode(cryptotext, 116))
