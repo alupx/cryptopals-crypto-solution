@@ -7,6 +7,7 @@ from challenge3 import decrypt_english_single_byte_xor
 from challenge4 import find_and_decrypt_single_byte_xor_in_file
 from challenge5 import encrypt_repeating_key_xor
 from challenge6 import decrypt_english_multi_byte_xor, guess_key_length
+from challenge8 import aes128_ecb_likelyhood
 from utils import hamming_distance
 
 
@@ -85,6 +86,16 @@ class TestChallenges(unittest.TestCase):
         expected_key = b"Terminator X: Bring the noiseTerminator X: Bring the noiseTerminator X: Bring the noiseTerminator X: Bring the noise"
         wrong_bytes = sum(key[i] != expected_key[i] for i in range(116))
         self.assertTrue(wrong_bytes < 10)
+
+    def test_challenge8(self):
+        correct_answer = 132
+        with open("data/8.txt", "r") as file:
+            likelyhoods = []
+            for line in file:
+                data = bytes.fromhex(line)
+                likelyhoods.append(aes128_ecb_likelyhood(data))
+        self.assertTrue(likelyhoods[correct_answer] > 0)
+        self.assertEqual(sum(likelyhoods), likelyhoods[correct_answer])
 
 
 if __name__ == "__main__":
