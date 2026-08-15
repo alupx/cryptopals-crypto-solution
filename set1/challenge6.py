@@ -40,7 +40,7 @@ def decode(cryptotext: bytes, key_len: int) -> tuple[bytes, str]:
 
 
 b64text = ""
-with open("6.txt", "r") as file:
+with open("data/6.txt", "r") as file:
     for line in file:
         b64text += line
 
