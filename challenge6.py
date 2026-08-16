@@ -1,8 +1,4 @@
-import sys
-
-sys.path.append("..")
 from challenge3 import decrypt_english_single_byte_xor
-
 from utils import hamming_distance
 
 

@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append("..")
 from utils import plaintext_score
 
 
