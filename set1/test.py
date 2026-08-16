@@ -1,4 +1,6 @@
-import base64
+import sys
+
+sys.path.append("..")
 import unittest
 
 from challenge1 import binary_to_base64
@@ -8,7 +10,8 @@ from challenge4 import find_and_decrypt_single_byte_xor_in_file
 from challenge5 import encrypt_repeating_key_xor
 from challenge6 import decrypt_english_multi_byte_xor, guess_key_length
 from challenge8 import aes128_ecb_likelyhood
-from utils import hamming_distance
+
+from utils import hamming_distance, read_base64_file
 
 
 class TestUtils(unittest.TestCase):
@@ -18,11 +21,7 @@ class TestUtils(unittest.TestCase):
 
 class TestChallenges(unittest.TestCase):
     def setUp(self):
-        b64data = ""
-        with open("data/6.txt", "r") as file:
-            for line in file:
-                b64data += line.strip()
-        self.challenge6_cryptotext = base64.b64decode(b64data)
+        self.challenge6_ciphertext = read_base64_file("data/6.txt")
 
     def test_challenge1(self):
         self.assertEqual(
@@ -68,21 +67,21 @@ class TestChallenges(unittest.TestCase):
     def test_challenge5(self):
         plaintext = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
         key = b"ICE"
-        cryptotext = encrypt_repeating_key_xor(plaintext, key)
-        expected_cryptotext = (
+        ciphertext = encrypt_repeating_key_xor(plaintext, key)
+        expected_ciphertext = (
             "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272"
             "a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
         )
-        self.assertEqual(cryptotext.hex(), expected_cryptotext)
+        self.assertEqual(ciphertext.hex(), expected_ciphertext)
 
     def test_challenge6_key_len(self):
-        guesses = guess_key_length(self.challenge6_cryptotext)
+        guesses = guess_key_length(self.challenge6_ciphertext)
         # test that the correct answer is among first 5 guesses
         most_likely_keylens = [key_len for key_len, _ in guesses[:6]]
         self.assertIn(116, most_likely_keylens)
 
     def test_challenge6_key(self):
-        key, _ = decrypt_english_multi_byte_xor(self.challenge6_cryptotext, 116)
+        key, _ = decrypt_english_multi_byte_xor(self.challenge6_ciphertext, 116)
         expected_key = b"Terminator X: Bring the noiseTerminator X: Bring the noiseTerminator X: Bring the noiseTerminator X: Bring the noise"
         wrong_bytes = sum(key[i] != expected_key[i] for i in range(116))
         self.assertTrue(wrong_bytes < 10)

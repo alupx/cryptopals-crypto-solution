@@ -1,3 +1,4 @@
+import base64
 from collections import defaultdict
 
 letter_frequency_english = {
@@ -56,3 +57,11 @@ def hamming_distance(a: bytes, b: bytes) -> int:
     for ca, cb in zip(a, b):
         distance += (ca ^ cb).bit_count()
     return distance
+
+
+def read_base64_file(filename):
+    with open(filename, "r") as file:
+        base64_content = ""
+        for line in file:
+            base64_content += line
+    return base64.b64decode(base64_content)

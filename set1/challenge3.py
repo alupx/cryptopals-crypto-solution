@@ -1,12 +1,15 @@
+import sys
+
+sys.path.append("..")
 from utils import plaintext_score
 
 
-def decrypt_english_single_byte_xor(cryptotext: bytes) -> tuple[int, int, str]:
+def decrypt_english_single_byte_xor(ciphertext: bytes) -> tuple[int, int, str]:
     best_score = float("inf")
     best_plaintext = None
     best_key = None
     for key in range(256):
-        plaintext_bytes = bytes([c ^ key for c in cryptotext])
+        plaintext_bytes = bytes([c ^ key for c in ciphertext])
         if not plaintext_bytes.isascii():
             continue
         else:
