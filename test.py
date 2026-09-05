@@ -1,5 +1,4 @@
 import random
-
 import unittest
 
 from challenge1 import binary_to_base64
@@ -11,7 +10,8 @@ from challenge6 import decrypt_english_multi_byte_xor, guess_key_length
 from challenge8 import aes128_ecb_likelyhood
 from challenge9 import add_pkcs7_padding
 from challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
-from utils import hamming_distance, read_base64_file
+from challenge11 import ecb_cbc_encryption_oracle, ecb_detector
+from utils import hamming_distance, read_base64_file, read_binary_file
 
 
 class TestUtils(unittest.TestCase):
@@ -156,6 +156,21 @@ class TestChallenge10(unittest.TestCase):
         ciphertext = encrypt_aes_128_cbc(iv, key, plaintext)
         decrypted_text = decrypt_aes_128_cbc(iv, key, ciphertext)
         self.assertEqual(decrypted_text, plaintext)
+
+
+class TestChallenge11(unittest.TestCase):
+    def setUp(self):
+        files_to_encrypt = ["challenge1.py", "challenge2.py", "utils.py"]
+        data = b""
+        for filename in files_to_encrypt:
+            data += read_binary_file(filename)
+        self.plaintext = data
+
+    def test_ecb_detector(self):
+        for _ in range(20):
+            mode, ciphertext = ecb_cbc_encryption_oracle(self.plaintext)
+            self.assertEqual(ecb_detector(ciphertext), mode == 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,15 @@
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
+def encrypt_aes_128_ecb(key: bytes, plaintext: bytes) -> bytes:
+    assert len(plaintext) % 16 == 0
+    assert len(key) == 16
+
+    cipher = Cipher(algorithms.AES(key), modes.ECB())
+    encryptor = cipher.encryptor()
+    return encryptor.update(plaintext) + encryptor.finalize()
+
+
 def encrypt_aes_128_cbc(iv: bytes, key: bytes, plaintext: bytes) -> bytes:
     assert len(plaintext) % 16 == 0
     assert len(iv) == 16

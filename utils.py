@@ -59,6 +59,11 @@ def hamming_distance(a: bytes, b: bytes) -> int:
     return distance
 
 
+def read_binary_file(filename) -> bytes:
+    with open(filename, "rb") as file:
+        return file.read()
+
+
 def read_base64_file(filename):
     with open(filename, "r") as file:
         base64_content = ""
