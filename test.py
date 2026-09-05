@@ -12,6 +12,12 @@ from challenge9 import add_pkcs7_padding
 from challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 from challenge11 import ecb_cbc_encryption_oracle, ecb_detector
 from challenge12 import decrypt_unknown_string
+from challenge13 import (
+    aes_ecb_cut_and_paste_generate_admin,
+    decode_profile,
+    decrypt_profile,
+    provide_encrypted_profile,
+)
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -186,6 +192,18 @@ class TestChallenge12(unittest.TestCase):
                 b" you stop? No, I just drove by\n"
             ),
         )
+
+
+class TestChallenge13(unittest.TestCase):
+    def test_admin_account_forging(self):
+        key = random.randbytes(16)
+        encrypted_profile_getter = lambda email: provide_encrypted_profile(key, email)
+        forged_ciphertext = aes_ecb_cut_and_paste_generate_admin(
+            encrypted_profile_getter
+        )
+        plaintext = decrypt_profile(key, forged_ciphertext)
+        _, _, role = decode_profile(plaintext.decode())
+        self.assertEqual(role, "admin")
 
 
 if __name__ == "__main__":

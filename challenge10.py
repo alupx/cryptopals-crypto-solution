@@ -10,6 +10,15 @@ def encrypt_aes_128_ecb(key: bytes, plaintext: bytes) -> bytes:
     return encryptor.update(plaintext) + encryptor.finalize()
 
 
+def decrypt_aes_128_ecb(key: bytes, ciphertext: bytes) -> bytes:
+    assert len(ciphertext) % 16 == 0
+    assert len(key) == 16
+
+    cipher = Cipher(algorithms.AES(key), modes.ECB())
+    decryptor = cipher.decryptor()
+    return decryptor.update(ciphertext) + decryptor.finalize()
+
+
 def encrypt_aes_128_cbc(iv: bytes, key: bytes, plaintext: bytes) -> bytes:
     assert len(plaintext) % 16 == 0
     assert len(iv) == 16
