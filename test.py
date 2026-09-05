@@ -11,6 +11,7 @@ from challenge8 import aes128_ecb_likelyhood
 from challenge9 import add_pkcs7_padding
 from challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 from challenge11 import ecb_cbc_encryption_oracle, ecb_detector
+from challenge12 import decrypt_unknown_string
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -170,6 +171,21 @@ class TestChallenge11(unittest.TestCase):
         for _ in range(20):
             mode, ciphertext = ecb_cbc_encryption_oracle(self.plaintext)
             self.assertEqual(ecb_detector(ciphertext), mode == 0)
+
+
+class TestChallenge12(unittest.TestCase):
+    def test_decryption(self):
+        block_size, is_ecb, message = decrypt_unknown_string()
+        self.assertEqual(block_size, 16)
+        self.assertEqual(is_ecb, True)
+        self.assertEqual(
+            message,
+            (
+                b"Rollin' in my 5.0\nWith my rag-top down so my hair can "
+                b"blow\nThe girlies on standby waving just to say hi\nDid"
+                b" you stop? No, I just drove by\n"
+            ),
+        )
 
 
 if __name__ == "__main__":
