@@ -1,7 +1,30 @@
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
-def decrypt_aes_128_cbs(iv: bytes, key: bytes, ciphertext: bytes) -> bytes:
+def encrypt_aes_128_cbc(iv: bytes, key: bytes, plaintext: bytes) -> bytes:
+    assert len(plaintext) % 16 == 0
+    assert len(iv) == 16
+    assert len(key) == 16
+
+    last_ciphertext_block = iv
+    ciphertext = b""
+
+    cipher = Cipher(algorithms.AES(key), modes.ECB())
+
+    for i in range(0, len(plaintext), 16):
+        current_plaintext_block = plaintext[i : i + 16]
+        encryptor = cipher.encryptor()
+        encryptor_input = bytes(
+            [a ^ b for a, b in zip(current_plaintext_block, last_ciphertext_block)]
+        )
+        ciphertext_block = encryptor.update(encryptor_input)
+        last_ciphertext_block = ciphertext_block
+        ciphertext += ciphertext_block
+
+    return ciphertext
+
+
+def decrypt_aes_128_cbc(iv: bytes, key: bytes, ciphertext: bytes) -> bytes:
     assert len(ciphertext) % 16 == 0
     assert len(iv) == 16
     assert len(key) == 16
@@ -9,9 +32,10 @@ def decrypt_aes_128_cbs(iv: bytes, key: bytes, ciphertext: bytes) -> bytes:
     last_ciphertext_block = iv
     plaintext = b""
 
+    cipher = Cipher(algorithms.AES(key), modes.ECB())
+
     for i in range(0, len(ciphertext), 16):
         current_ciphertext_block = ciphertext[i : i + 16]
-        cipher = Cipher(algorithms.AES(key), modes.ECB())
         decryptor = cipher.decryptor()
         plaintext_block = decryptor.update(current_ciphertext_block)
         plaintext += bytes(

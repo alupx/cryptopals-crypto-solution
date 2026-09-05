@@ -1,3 +1,5 @@
+import random
+
 import unittest
 
 from challenge1 import binary_to_base64
@@ -8,7 +10,7 @@ from challenge5 import encrypt_repeating_key_xor
 from challenge6 import decrypt_english_multi_byte_xor, guess_key_length
 from challenge8 import aes128_ecb_likelyhood
 from challenge9 import add_pkcs7_padding
-from challenge10 import decrypt_aes_128_cbs
+from challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 from utils import hamming_distance, read_base64_file
 
 
@@ -128,17 +130,32 @@ class TestChallenge10(unittest.TestCase):
         )
 
         self.assertEqual(
-            decrypt_aes_128_cbs(bytes(16), self.key, self.ciphertext[:64]),
+            decrypt_aes_128_cbc(bytes(16), self.key, self.ciphertext[:64]),
             expected_head,
         )
 
     def test_decryption_tail(self):
         expected_tail = b"white boy Come on, Come on, Come on \nPlay that funky music \n\x04\x04\x04\x04"
         self.assertEqual(
-            decrypt_aes_128_cbs(bytes(16), self.key, self.ciphertext)[-64:],
+            decrypt_aes_128_cbc(bytes(16), self.key, self.ciphertext)[-64:],
             expected_tail,
         )
 
+    def test_encryption_decryption_single_block(self):
+        key = random.randbytes(16)
+        iv = random.randbytes(16)
+        plaintext = random.randbytes(16)
+        ciphertext = encrypt_aes_128_cbc(iv, key, plaintext)
+        decrypted_text = decrypt_aes_128_cbc(iv, key, ciphertext)
+        self.assertEqual(decrypted_text, plaintext)
+
+    def test_encryption_decryption_multi_block(self):
+        key = random.randbytes(16)
+        iv = random.randbytes(16)
+        plaintext = random.randbytes(2048)
+        ciphertext = encrypt_aes_128_cbc(iv, key, plaintext)
+        decrypted_text = decrypt_aes_128_cbc(iv, key, ciphertext)
+        self.assertEqual(decrypted_text, plaintext)
 
 if __name__ == "__main__":
     unittest.main()
