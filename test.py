@@ -19,6 +19,7 @@ from challenge13 import (
     provide_encrypted_profile,
 )
 from challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
+from challenge15 import strip_pkc7_padding
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -241,6 +242,18 @@ class TestChallenge14(unittest.TestCase):
         prefix = b"prefix"
         target = b"target"
         self.verify_decryption(key, prefix, target)
+
+
+class TestChallenge15(unittest.TestCase):
+    def test_padding_too_long(self):
+        padded_data = b"x" + b"\x1f" * 31
+        with self.assertRaises(ValueError):
+            strip_pkc7_padding(padded_data, 16)
+
+    def test_padding_wrong_value(self):
+        padded_data = b"x" * 12 + b"\x04\x05\x04\x04"
+        with self.assertRaises(ValueError):
+            strip_pkc7_padding(padded_data, 16)
 
 
 if __name__ == "__main__":

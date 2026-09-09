@@ -1,7 +1,8 @@
 from collections.abc import Callable
 
-from challenge9 import add_pkcs7_padding, strip_pkc7_padding
+from challenge9 import add_pkcs7_padding
 from challenge10 import decrypt_aes_128_ecb, encrypt_aes_128_ecb
+from challenge15 import strip_pkc7_padding
 
 
 def encode_profile(email: str, uid: int, role: str) -> str:
