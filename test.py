@@ -18,6 +18,7 @@ from challenge13 import (
     decrypt_profile,
     provide_encrypted_profile,
 )
+from challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -204,6 +205,42 @@ class TestChallenge13(unittest.TestCase):
         plaintext = decrypt_profile(key, forged_ciphertext)
         _, _, role = decode_profile(plaintext.decode())
         self.assertEqual(role, "admin")
+
+
+class TestChallenge14(unittest.TestCase):
+    def verify_decryption(self, key, prefix, target):
+        getter = lambda x: ecb_encryption_oracle_hard(key, prefix, x, target)
+        block_size, is_ecb, initial_prefix_len, msg = decrypt_unknown_string_hard(
+            getter
+        )
+        self.assertEqual(block_size, 16)
+        self.assertEqual(is_ecb, True)
+        self.assertEqual(initial_prefix_len, len(prefix))
+        self.assertEqual(msg, target)
+
+    def test_no_prefix(self):
+        key = random.randbytes(16)
+        prefix = b""
+        target = b"qwertyuiopasdfghjklzxcvbnm"
+        self.verify_decryption(key, prefix, target)
+
+    def test_identical_blocks_in_prefix(self):
+        key = random.randbytes(16)
+        prefix = add_pkcs7_padding(b"prefix", 16) * 5
+        target = b"qwertyuiopasdfghjklzxcvbnm"
+        self.verify_decryption(key, prefix, target)
+
+    def test_not_aligned_prefix(self):
+        key = random.randbytes(16)
+        prefix = b"prefix" * 3
+        target = b"qwertyuiopasdfghjklzxcvbnm"
+        self.verify_decryption(key, prefix, target)
+
+    def test_short_target(self):
+        key = random.randbytes(16)
+        prefix = b"prefix"
+        target = b"target"
+        self.verify_decryption(key, prefix, target)
 
 
 if __name__ == "__main__":
