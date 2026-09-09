@@ -20,6 +20,7 @@ from challenge13 import (
 )
 from challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
 from challenge15 import strip_pkc7_padding
+from challenge16 import do_bitflipping_attack
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -254,6 +255,14 @@ class TestChallenge15(unittest.TestCase):
         padded_data = b"x" * 12 + b"\x04\x05\x04\x04"
         with self.assertRaises(ValueError):
             strip_pkc7_padding(padded_data, 16)
+
+
+class TestChallenge16(unittest.TestCase):
+    def test_bitflipping_attack(self):
+        key, iv = random.randbytes(16), random.randbytes(16)
+        ciphertext = do_bitflipping_attack(key, iv)
+        plaintext = decrypt_aes_128_cbc(key, iv, ciphertext)[48:59].decode()
+        self.assertEqual(plaintext, ";admin=true")
 
 
 if __name__ == "__main__":
