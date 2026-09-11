@@ -1,3 +1,4 @@
+import base64
 import random
 import unittest
 
@@ -21,6 +22,7 @@ from challenge13 import (
 from challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
 from challenge15 import strip_pkc7_padding
 from challenge16 import do_bitflipping_attack
+from challenge17 import padding_oracle, padding_oracle_attack
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -249,12 +251,12 @@ class TestChallenge15(unittest.TestCase):
     def test_padding_too_long(self):
         padded_data = b"x" + b"\x1f" * 31
         with self.assertRaises(ValueError):
-            strip_pkc7_padding(padded_data, 16)
+            _ = strip_pkc7_padding(padded_data, 16)
 
     def test_padding_wrong_value(self):
         padded_data = b"x" * 12 + b"\x04\x05\x04\x04"
         with self.assertRaises(ValueError):
-            strip_pkc7_padding(padded_data, 16)
+            _ = strip_pkc7_padding(padded_data, 16)
 
 
 class TestChallenge16(unittest.TestCase):
@@ -263,6 +265,20 @@ class TestChallenge16(unittest.TestCase):
         ciphertext = do_bitflipping_attack(key, iv)
         plaintext = decrypt_aes_128_cbc(key, iv, ciphertext)[48:59].decode()
         self.assertEqual(plaintext, ";admin=true")
+
+
+class TestChallenge17(unittest.TestCase):
+    def test_padding_oracle_attack(self):
+        with open("data/17.txt", "r") as file:
+            lines = [base64.b64decode(line) for line in file]
+
+        for plaintext in lines:
+            key, iv = random.randbytes(16), random.randbytes(16)
+            padded_plaintext = add_pkcs7_padding(plaintext, 16)
+            ciphertext = encrypt_aes_128_cbc(iv, key, padded_plaintext)
+            oracle = lambda iv, ciphertext, key=key: padding_oracle(iv, key, ciphertext)
+            msg = padding_oracle_attack(iv, ciphertext, oracle)
+            self.assertEqual(msg, padded_plaintext)
 
 
 if __name__ == "__main__":
