@@ -23,6 +23,7 @@ from challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
 from challenge15 import strip_pkc7_padding
 from challenge16 import do_bitflipping_attack
 from challenge17 import padding_oracle, padding_oracle_attack
+from challenge18 import process_aes_128_ctr
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -279,6 +280,22 @@ class TestChallenge17(unittest.TestCase):
             oracle = lambda iv, ciphertext, key=key: padding_oracle(iv, key, ciphertext)
             msg = padding_oracle_attack(iv, ciphertext, oracle)
             self.assertEqual(msg, padded_plaintext)
+
+
+class TestChallenge18(unittest.TestCase):
+    def test_decryption_ice_baby(self):
+        ciphertext = read_base64_file("data/18.txt")
+        self.assertEqual(
+            process_aes_128_ctr(0, b"YELLOW SUBMARINE", ciphertext),
+            b"Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ",
+        )
+
+    def test_encryption_decryption(self):
+        plaintext = random.randbytes(200)
+        nonce = random.randint(0, 2**64 - 1)
+        key = random.randbytes(16)
+        ciphertext = process_aes_128_ctr(nonce, key, plaintext)
+        self.assertEqual(plaintext, process_aes_128_ctr(nonce, key, ciphertext))
 
 
 if __name__ == "__main__":
