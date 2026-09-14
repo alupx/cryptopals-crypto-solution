@@ -24,6 +24,7 @@ from challenge15 import strip_pkc7_padding
 from challenge16 import do_bitflipping_attack
 from challenge17 import padding_oracle, padding_oracle_attack
 from challenge18 import process_aes_128_ctr
+from challenge20 import break_fixed_nonce
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -296,6 +297,18 @@ class TestChallenge18(unittest.TestCase):
         key = random.randbytes(16)
         ciphertext = process_aes_128_ctr(nonce, key, plaintext)
         self.assertEqual(plaintext, process_aes_128_ctr(nonce, key, ciphertext))
+
+
+class TestChallenge20(unittest.TestCase):
+    def test_break_fixed_nonce(self):
+        key = random.randbytes(16)
+
+        with open("data/19.txt", "r") as f:
+            plaintexts = [base64.b64decode(line) for line in f]
+
+        ciphertexts = [process_aes_128_ctr(0, key, pt) for pt in plaintexts]
+        for decrypted, target in zip(break_fixed_nonce(ciphertexts), plaintexts):
+            self.assertEqual(decrypted[:16], target[:16].decode())
 
 
 if __name__ == "__main__":

@@ -31,12 +31,18 @@ letter_frequency_english = {
 }
 
 
-def plaintext_score(s: str) -> float:
+def plaintext_score(
+    s: str, numeric: bool = True, blacklist: list | None = None
+) -> float:
     s_letter_frequency = defaultdict(float)
     letters_count = 0
     score = 0
+    if not blacklist:
+        blacklist = []
     for c in s:
-        if c.lower() in letter_frequency_english:
+        if (not numeric and c.isdigit()) or c in blacklist:
+            return float("inf")
+        elif c.lower() in letter_frequency_english:
             s_letter_frequency[c.lower()] += 1
             letters_count += 1
         elif 32 <= ord(c) <= 126 or ord(c) == 10:
