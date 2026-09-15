@@ -25,6 +25,7 @@ from challenge16 import do_bitflipping_attack
 from challenge17 import padding_oracle, padding_oracle_attack
 from challenge18 import process_aes_128_ctr
 from challenge20 import break_fixed_nonce
+from challenge21 import MT19937
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -309,6 +310,15 @@ class TestChallenge20(unittest.TestCase):
         ciphertexts = [process_aes_128_ctr(0, key, pt) for pt in plaintexts]
         for decrypted, target in zip(break_fixed_nonce(ciphertexts), plaintexts):
             self.assertEqual(decrypted[:16], target[:16].decode())
+
+
+class TestChallenge21(unittest.TestCase):
+    def test_known_sequence(self):
+        mt = MT19937(5489)
+        obtained = [mt.rand() for _ in range(5)]
+        # https://oeis.org/A221557
+        target = [3499211612, 581869302, 3890346734, 3586334585, 545404204]
+        self.assertEqual(obtained, target)
 
 
 if __name__ == "__main__":
