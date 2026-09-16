@@ -26,6 +26,7 @@ from challenge17 import padding_oracle, padding_oracle_attack
 from challenge18 import process_aes_128_ctr
 from challenge20 import break_fixed_nonce
 from challenge21 import MT19937
+from challenge22 import bruteforce_MT19937
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -319,6 +320,14 @@ class TestChallenge21(unittest.TestCase):
         # https://oeis.org/A221557
         target = [3499211612, 581869302, 3890346734, 3586334585, 545404204]
         self.assertEqual(obtained, target)
+
+
+class TestChallenge22(unittest.TestCase):
+    def test_seed_cracking(self):
+        fake_time_seed = random.randint(2880000000, 2880010000)
+        first_output = MT19937(fake_time_seed).rand()
+        cracked = bruteforce_MT19937(first_output, 2880020000)
+        self.assertEqual(fake_time_seed, cracked)
 
 
 if __name__ == "__main__":
