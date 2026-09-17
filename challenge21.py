@@ -21,6 +21,14 @@ class MT19937:
             initial_x.append(seed)
         self.x = deque(initial_x)
 
+    @classmethod
+    def from_state(cls, state: list[int]) -> "MT19937":
+        """Build an instance directly from a state vector (skips seeding)."""
+        assert len(state) == cls.n
+        obj = cls.__new__(cls)
+        obj.x = deque(state)
+        return obj
+
     def rand(self):
         x = (self.x[0] & self.umask) | (self.x[1] & self.lmask)
         xA = x >> 1

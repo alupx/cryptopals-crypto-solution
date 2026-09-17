@@ -27,6 +27,13 @@ from challenge18 import process_aes_128_ctr
 from challenge20 import break_fixed_nonce
 from challenge21 import MT19937
 from challenge22 import bruteforce_MT19937
+from challenge23 import (
+    clone_MT19937_from_output,
+    invert_xor_lshift_and,
+    invert_xor_rshift_and,
+    xor_lshift_and,
+    xor_rshift_and,
+)
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -328,6 +335,34 @@ class TestChallenge22(unittest.TestCase):
         first_output = MT19937(fake_time_seed).rand()
         cracked = bruteforce_MT19937(first_output, 2880020000)
         self.assertEqual(fake_time_seed, cracked)
+
+
+class TestChallenge23(unittest.TestCase):
+    def test_untempering_functions_edge_cases(self):
+        for x in (0, 0xFFFFFFFF):
+            for a in (0, 0xFFFFFFFF):
+                for n in (1, 31):
+                    q = xor_rshift_and(x, n, a)
+                    self.assertEqual(invert_xor_rshift_and(q, n, a), x)
+                    q = xor_lshift_and(x, n, a)
+                    self.assertEqual(invert_xor_lshift_and(q, n, a), x)
+
+    def test_untempering_functions_fuzzy(self):
+        for _ in range(10):
+            x = random.randint(0, 0xFFFFFFFF)
+            a = random.randint(0, 0xFFFFFFFF)
+            n = random.randint(1, 31)
+            q = xor_rshift_and(x, n, a)
+            self.assertEqual(invert_xor_rshift_and(q, n, a), x)
+            q = xor_lshift_and(x, n, a)
+            self.assertEqual(invert_xor_lshift_and(q, n, a), x)
+
+    def test_MT19937_cloning(self):
+        mt = MT19937(5489)
+        clone = clone_MT19937_from_output(mt.rand)
+        self.assertEqual(mt.x, clone.x)
+        for _ in range(100):
+            self.assertEqual(mt.rand(), clone.rand())
 
 
 if __name__ == "__main__":
