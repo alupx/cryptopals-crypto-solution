@@ -34,6 +34,7 @@ from challenge23 import (
     xor_lshift_and,
     xor_rshift_and,
 )
+from challenge24 import bruteforce_MT19937_stream_cipher, process_MT19937_stream_cipher
 from utils import hamming_distance, read_base64_file, read_binary_file
 
 
@@ -363,6 +364,23 @@ class TestChallenge23(unittest.TestCase):
         self.assertEqual(mt.x, clone.x)
         for _ in range(100):
             self.assertEqual(mt.rand(), clone.rand())
+
+
+class TestChallenge24(unittest.TestCase):
+    def test_encryption_decryption(self):
+        plaintext = random.randbytes(200)
+        key = random.randint(0, 2**16 - 1)
+        ciphertext = process_MT19937_stream_cipher(key, plaintext)
+        self.assertEqual(plaintext, process_MT19937_stream_cipher(key, ciphertext))
+
+    def test_bruteforce(self):
+        suffix = b"AAAAAAAAAAAAAA"
+        plaintext = random.randbytes(200) + suffix
+        key = random.randint(0, 2**16 - 1)
+        ciphertext = process_MT19937_stream_cipher(key, plaintext)
+        self.assertEqual(
+            plaintext, bruteforce_MT19937_stream_cipher(ciphertext, suffix)
+        )
 
 
 if __name__ == "__main__":
