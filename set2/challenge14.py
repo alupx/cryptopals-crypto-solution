@@ -1,8 +1,8 @@
 from random import randbytes
 
-from challenge9 import add_pkcs7_padding
-from challenge10 import encrypt_aes_128_ecb
-from challenge11 import ecb_detector
+from .challenge9 import add_pkcs7_padding
+from .challenge10 import encrypt_aes_128_ecb
+from .challenge11 import ecb_detector
 
 
 def ecb_encryption_oracle_hard(key, prefix, user_data, hidden_message):

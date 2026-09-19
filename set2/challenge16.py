@@ -1,5 +1,5 @@
-from challenge9 import add_pkcs7_padding
-from challenge10 import encrypt_aes_128_cbc
+from .challenge9 import add_pkcs7_padding
+from .challenge10 import encrypt_aes_128_cbc
 
 
 def generate_ciphertext(key: bytes, iv: bytes, data: str) -> bytes:

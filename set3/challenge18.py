@@ -1,4 +1,4 @@
-from challenge10 import encrypt_aes_128_ecb
+from set2.challenge10 import encrypt_aes_128_ecb
 
 
 def get_keystream(nonce: int, counter: int, key: bytes):

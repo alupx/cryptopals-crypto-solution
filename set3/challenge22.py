@@ -1,7 +1,7 @@
 from random import randint
 from time import sleep, time
 
-from challenge21 import MT19937
+from .challenge21 import MT19937
 
 
 def bruteforce_MT19937(target: int, start_time: int) -> int:
@@ -18,6 +18,7 @@ def get_time_seed_32() -> int:
 
 
 if __name__ == "__main__":
+    # Run as `python -m set3.challenge22` from the repo root (relative import needs a package context).
     print("Waiting for a random number of seconds...")
     sleep(randint(1, 10))
     seed = get_time_seed_32()

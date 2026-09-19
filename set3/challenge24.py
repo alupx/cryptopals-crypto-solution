@@ -1,4 +1,4 @@
-from challenge21 import MT19937
+from .challenge21 import MT19937
 
 
 def process_MT19937_stream_cipher(key: int, data: bytes) -> bytes:

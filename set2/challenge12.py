@@ -1,9 +1,10 @@
 from random import randbytes
 
-from challenge9 import add_pkcs7_padding
-from challenge10 import encrypt_aes_128_ecb
-from challenge11 import ecb_detector
 from utils import read_base64_file
+
+from .challenge9 import add_pkcs7_padding
+from .challenge10 import encrypt_aes_128_ecb
+from .challenge11 import ecb_detector
 
 
 def ecb_encryption_oracle(key, data):

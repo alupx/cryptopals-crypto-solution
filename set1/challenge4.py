@@ -1,4 +1,4 @@
-from challenge3 import decrypt_english_single_byte_xor
+from .challenge3 import decrypt_english_single_byte_xor
 
 
 def find_and_decrypt_single_byte_xor_in_file(filename: str) -> str:

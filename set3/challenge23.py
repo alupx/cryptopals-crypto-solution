@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from challenge21 import MT19937
+from .challenge21 import MT19937
 
 # All inverse functions here assume 32 bits
 

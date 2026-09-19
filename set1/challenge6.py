@@ -1,5 +1,6 @@
-from challenge3 import decrypt_english_single_byte_xor
 from utils import hamming_distance
+
+from .challenge3 import decrypt_english_single_byte_xor
 
 
 def guess_key_length(

@@ -1,8 +1,9 @@
 from random import randbytes, randint
 
-from challenge8 import aes128_ecb_likelyhood
-from challenge9 import add_pkcs7_padding
-from challenge10 import encrypt_aes_128_cbc, encrypt_aes_128_ecb
+from set1.challenge8 import aes128_ecb_likelyhood
+
+from .challenge9 import add_pkcs7_padding
+from .challenge10 import encrypt_aes_128_cbc, encrypt_aes_128_ecb
 
 
 def ecb_cbc_encryption_oracle(data: bytes):

@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
-from challenge10 import decrypt_aes_128_cbc
-from challenge15 import strip_pkc7_padding
+from set2.challenge10 import decrypt_aes_128_cbc
+from set2.challenge15 import strip_pkc7_padding
 
 
 def padding_oracle(iv: bytes, key: bytes, data: bytes) -> bool:
