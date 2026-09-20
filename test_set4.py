@@ -1,9 +1,12 @@
 import random
 import unittest
 
+from set2.challenge9 import add_pkcs7_padding
+from set2.challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 from set3.challenge18 import process_aes_128_ctr
 from set4.challenge25 import break_editable_aes_128_ctr, edit_aes_128_ctr
 from set4.challenge26 import do_bitflipping_attack
+from set4.challenge27 import break_cbc_iv_equals_key
 from utils import read_base64_file
 
 
@@ -53,6 +56,21 @@ class TestChallenge26(unittest.TestCase):
         ciphertext = do_bitflipping_attack(nonce, key)
         plaintext = process_aes_128_ctr(nonce, key, ciphertext)[35:46].decode()
         self.assertEqual(plaintext, ";admin=true")
+
+
+class TestChallenge27(unittest.TestCase):
+    def test_recovering_key_from_cbc_iv_equals_key(self):
+        key = random.randbytes(16)
+        plaintext = (
+            b"nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura"
+        )
+        ciphertext = encrypt_aes_128_cbc(key, key, add_pkcs7_padding(plaintext, 16))
+        get_decryption_result = lambda ciphertext: decrypt_aes_128_cbc(
+            key, key, ciphertext
+        )
+        self.assertEqual(
+            break_cbc_iv_equals_key(ciphertext, get_decryption_result), plaintext
+        )
 
 
 if __name__ == "__main__":
