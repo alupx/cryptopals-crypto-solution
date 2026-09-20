@@ -3,6 +3,7 @@ import unittest
 
 from set3.challenge18 import process_aes_128_ctr
 from set4.challenge25 import break_editable_aes_128_ctr, edit_aes_128_ctr
+from set4.challenge26 import do_bitflipping_attack
 from utils import read_base64_file
 
 
@@ -44,6 +45,14 @@ class TestChallenge25(unittest.TestCase):
         edited_ciphertext = edit_aes_128_ctr(nonce, key, ciphertext, 0, b"Z")
         recovered_plaintext = process_aes_128_ctr(nonce, key, edited_ciphertext)
         self.assertEqual(recovered_plaintext, b"ZAAAA")
+
+
+class TestChallenge26(unittest.TestCase):
+    def test_bitflipping_attack(self):
+        nonce, key = random.randint(0, 255), random.randbytes(16)
+        ciphertext = do_bitflipping_attack(nonce, key)
+        plaintext = process_aes_128_ctr(nonce, key, ciphertext)[35:46].decode()
+        self.assertEqual(plaintext, ";admin=true")
 
 
 if __name__ == "__main__":
