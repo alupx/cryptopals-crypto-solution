@@ -7,6 +7,7 @@ from set3.challenge18 import process_aes_128_ctr
 from set4.challenge25 import break_editable_aes_128_ctr, edit_aes_128_ctr
 from set4.challenge26 import do_bitflipping_attack
 from set4.challenge27 import break_cbc_iv_equals_key
+from set4.challenge28 import SHA1
 from utils import read_base64_file
 
 
@@ -70,6 +71,17 @@ class TestChallenge27(unittest.TestCase):
         )
         self.assertEqual(
             break_cbc_iv_equals_key(ciphertext, get_decryption_result), plaintext
+        )
+
+
+class TestChallenge28(unittest.TestCase):
+    def test_sha1_blank(self):
+        self.assertEqual(SHA1(b""), 0xDA39A3EE5E6B4B0D3255BFEF95601890AFD80709)
+
+    def test_sha1_string(self):
+        self.assertEqual(
+            SHA1(b"The quick brown fox jumps over the lazy dog"),
+            0x2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12,
         )
 
 
