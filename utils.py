@@ -76,3 +76,7 @@ def read_base64_file(filename):
         for line in file:
             base64_content += line
     return base64.b64decode(base64_content)
+
+
+def mask32(x: int) -> int:
+    return x & 0xFFFFFFFF
