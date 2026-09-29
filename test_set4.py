@@ -9,6 +9,7 @@ from set4.challenge26 import do_bitflipping_attack
 from set4.challenge27 import break_cbc_iv_equals_key
 from set4.challenge28 import sha1, sha1_mac
 from set4.challenge29 import sha1_mac_length_extension, verify_sha1_mac
+from set4.challenge30 import md4, md4_mac, md4_mac_length_extension, verify_md4_mac
 from utils import read_base64_file
 
 
@@ -99,6 +100,30 @@ class TestChallenge29(unittest.TestCase):
         self.assertTrue(extended_message.startswith(message))
         self.assertTrue(extended_message.endswith(extension))
         self.assertTrue(verify_sha1_mac(extended_message, key, extended_mac))
+
+
+class TestChallenge30(unittest.TestCase):
+    def test_md4_blank(self):
+        self.assertEqual(md4(b""), 0x31D6CFE0D16AE931B73C59D7E0C089C0)
+
+    def test_md4_string(self):
+        self.assertEqual(
+            md4(b"The quick brown fox jumps over the lazy dog"),
+            0x1BEE69A46BA811185C194762ABAEAE90,
+        )
+
+    def test_md4_extension(self):
+        key = random.randbytes(random.randint(1, 64))
+        message = b"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"
+        extension = b";admin=true"
+        mac = md4_mac(key, message)
+        verify = lambda msg, mac: verify_md4_mac(msg, key, mac)
+        extended_message, extended_mac = md4_mac_length_extension(
+            message, extension, mac, verify
+        )
+        self.assertTrue(extended_message.startswith(message))
+        self.assertTrue(extended_message.endswith(extension))
+        self.assertTrue(verify_md4_mac(extended_message, key, extended_mac))
 
 
 if __name__ == "__main__":
