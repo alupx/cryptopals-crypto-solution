@@ -10,6 +10,7 @@ from set4.challenge27 import break_cbc_iv_equals_key
 from set4.challenge28 import sha1, sha1_mac
 from set4.challenge29 import sha1_mac_length_extension, verify_sha1_mac
 from set4.challenge30 import md4, md4_mac, md4_mac_length_extension, verify_md4_mac
+from set4.challenge31 import guess_hmac, hmac_sha1, slow_compare
 from utils import read_base64_file
 
 
@@ -124,6 +125,37 @@ class TestChallenge30(unittest.TestCase):
         self.assertTrue(extended_message.startswith(message))
         self.assertTrue(extended_message.endswith(extension))
         self.assertTrue(verify_md4_mac(extended_message, key, extended_mac))
+
+
+class TestChallenge31(unittest.TestCase):
+    message = b"The quick brown fox jumps over the lazy dog"
+
+    def test_hmac_sha1_short_key(self):
+        self.assertEqual(
+            hmac_sha1(b"key", self.message),
+            0xDE7C9B85B8B78AA6BC8A7A36F70A90701C9DB4D9,
+        )
+
+    def test_hmac_sha1_block_size_key(self):
+        self.assertEqual(
+            hmac_sha1(b"A" * 64, self.message),
+            0x76A4A7EB10B722FA4EA89D5C3548E4CFC7DC5801,
+        )
+
+    def test_hmac_sha1_long_key(self):
+        self.assertEqual(
+            hmac_sha1(b"A" * 100, self.message),
+            0x1307E001A9782FB0A8DE16DA90197642CDC0A73E,
+        )
+
+    def test_hmac_sha1_timing_leak(self):
+        # We try to guess only the first 3 bytes of a random sha1 hash
+        delay = 6
+        bytes_to_guess = 3
+        target = b"\x10\x20\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        check = lambda guess: slow_compare(target, guess, delay)
+        guess = guess_hmac(check, bytes_to_guess, delay)
+        self.assertEqual(guess, target)
 
 
 if __name__ == "__main__":
