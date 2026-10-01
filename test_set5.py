@@ -1,6 +1,8 @@
 import unittest
+from random import randbytes
 
 from set5.challenge33 import diffie_hellman
+from set5.challenge34 import dh_echo_bot, dh_party, man_in_the_middle
 
 
 def _hex(s: str) -> int:
@@ -84,6 +86,26 @@ class TestChallenge33(unittest.TestCase):
 
     def test_diffie_hellman_ffdhe4096(self):
         self._check_exchange(FFDHE4096, 2)
+
+
+class TestChallenge34(unittest.TestCase):
+    def test_echo(self):
+        p, g = FFDHE2048, 2
+        alice, bot = dh_party(p, g), dh_echo_bot(p, g)
+        A, B = alice.get_public_key(), bot.get_public_key()
+        _ = alice.generate_session_key(B)
+        _ = bot.generate_session_key(A)
+        message = randbytes(300)
+        alice_to_bot = alice.encrypt(message)
+        bot_to_alice = bot.echo(alice_to_bot)
+        self.assertEqual(alice.decrypt(bot_to_alice), message)
+
+    def test_man_in_the_middle(self):
+        p, g = FFDHE2048, 2
+        alice, bot = dh_party(p, g), dh_echo_bot(p, g)
+        message, a, b = man_in_the_middle(alice, bot, p)
+        self.assertEqual(a, message)
+        self.assertEqual(b, message)
 
 
 if __name__ == "__main__":
