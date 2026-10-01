@@ -4,6 +4,7 @@
 ![set2 completion](https://img.shields.io/badge/set%202-100%25-brightgreen)
 ![set3 completion](https://img.shields.io/badge/set%203-100%25-brightgreen)
 ![set4 completion](https://img.shields.io/badge/set%204-100%25-brightgreen)
+![set5 completion](https://img.shields.io/badge/set%205-12%25-blue)
 
 My solutions to the [Cryptopals Crypto Challenges](https://cryptopals.com/), organized by set, with tests in the corresponding `test_setN.py` files.
 
