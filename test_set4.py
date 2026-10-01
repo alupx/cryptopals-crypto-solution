@@ -11,6 +11,7 @@ from set4.challenge28 import sha1, sha1_mac
 from set4.challenge29 import sha1_mac_length_extension, verify_sha1_mac
 from set4.challenge30 import md4, md4_mac, md4_mac_length_extension, verify_md4_mac
 from set4.challenge31 import guess_hmac, hmac_sha1, slow_compare
+from set4.challenge32 import guess_hmac_fast
 from utils import read_base64_file
 
 
@@ -155,6 +156,17 @@ class TestChallenge31(unittest.TestCase):
         target = b"\x10\x20\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
         check = lambda guess: slow_compare(target, guess, delay)
         guess = guess_hmac(check, bytes_to_guess, delay)
+        self.assertEqual(guess, target)
+
+
+class TestChallenge32(unittest.TestCase):
+    def test_hmac_sha1_timing_leak_fast(self):
+        # We try to guess only the first 3 bytes of a random sha1 hash
+        delay = 2
+        bytes_to_guess = 3
+        target = b"\x10\x20\x30\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+        check = lambda guess: slow_compare(target, guess, delay)
+        guess = guess_hmac_fast(check, bytes_to_guess)
         self.assertEqual(guess, target)
 
 
