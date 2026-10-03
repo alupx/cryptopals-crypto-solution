@@ -5,6 +5,7 @@ from set5.challenge33 import diffie_hellman
 from set5.challenge34 import dh_echo_bot, dh_party, man_in_the_middle
 from set5.challenge35 import man_in_the_middle_inject_g
 from set5.challenge36 import SrpClient, SrpServer
+from set5.challenge37 import break_srp_with_zero_key
 
 
 def _hex(s: str) -> int:
@@ -153,6 +154,14 @@ class TestChallenge36(unittest.TestCase):
             self.assertFalse(
                 self._check_client_server(N, "y3lloWsUbm@r1nE!", "y3lloWsUbm@r1nE?")
             )
+
+
+class TestChallenge37(unittest.TestCase):
+    def test_break_srp_with_zero_key(self):
+        for N in [FFDHE2048, FFDHE3072, FFDHE4096]:
+            s = SrpServer(N, 2, 3, "p@sSw0rD!")
+            h = break_srp_with_zero_key(s)
+            self.assertTrue(s.check_validation_hmac(0, h))
 
 
 if __name__ == "__main__":
