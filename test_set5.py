@@ -4,6 +4,7 @@ from random import randbytes
 from set5.challenge33 import diffie_hellman
 from set5.challenge34 import dh_echo_bot, dh_party, man_in_the_middle
 from set5.challenge35 import man_in_the_middle_inject_g
+from set5.challenge36 import SrpClient, SrpServer
 
 
 def _hex(s: str) -> int:
@@ -127,6 +128,31 @@ class TestChallenge35(unittest.TestCase):
     def test_man_in_the_middle_g_p_minus_1(self):
         for p in [FFDHE2048, FFDHE3072, FFDHE4096]:
             self._check_g_injection(p, p - 1)
+
+
+class TestChallenge36(unittest.TestCase):
+    def _check_client_server(
+        self, N: int, server_password: str, client_password: str
+    ) -> bool:
+        g = 2
+        k = 3
+        s = SrpServer(N, g, k, server_password)
+        salt = s.salt
+        c = SrpClient(N, g, k, client_password, salt)
+        A, B = c.pub, s.pub
+        h = c.get_validation_hmac(B)
+        return s.check_validation_hmac(A, h)
+
+    def test_client_server_handshake(self):
+        password = "y3lloWsUbm@r1nE!"
+        for N in [FFDHE2048, FFDHE3072, FFDHE4096]:
+            self.assertTrue(self._check_client_server(N, password, password))
+
+    def test_client_server_wrong_password(self):
+        for N in [FFDHE2048, FFDHE3072, FFDHE4096]:
+            self.assertFalse(
+                self._check_client_server(N, "y3lloWsUbm@r1nE!", "y3lloWsUbm@r1nE?")
+            )
 
 
 if __name__ == "__main__":
