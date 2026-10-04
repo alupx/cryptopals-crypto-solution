@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 from set2.challenge10 import decrypt_aes_128_cbc
-from set2.challenge15 import strip_pkc7_padding
+from set2.challenge15 import strip_pkcs7_padding
 
 
 def break_cbc_iv_equals_key(
@@ -13,4 +13,4 @@ def break_cbc_iv_equals_key(
         [a ^ b for a, b in zip(corrupted_decryption[:16], corrupted_decryption[32:])]
     )
     recovered_plaintext = decrypt_aes_128_cbc(recovered_key, recovered_key, ciphertext)
-    return strip_pkc7_padding(recovered_plaintext, 16)
+    return strip_pkcs7_padding(recovered_plaintext, 16)

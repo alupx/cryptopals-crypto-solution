@@ -12,19 +12,25 @@ from set2.challenge13 import (
     provide_encrypted_profile,
 )
 from set2.challenge14 import decrypt_unknown_string_hard, ecb_encryption_oracle_hard
-from set2.challenge15 import strip_pkc7_padding
+from set2.challenge15 import strip_pkcs7_padding
 from set2.challenge16 import do_bitflipping_attack
 from utils import read_base64_file, read_binary_file
 
 
 class TestChallenge9(unittest.TestCase):
-    def test_zero_padding(self):
-        self.assertEqual(add_pkcs7_padding(b"YELLOW SUBMARINE", 2), b"YELLOW SUBMARINE")
-
-    def test_zero_padding_bis(self):
+    def test_aligned_padding(self):
         self.assertEqual(
-            add_pkcs7_padding(b"YELLOW SUBMARINE", 16), b"YELLOW SUBMARINE"
+            add_pkcs7_padding(b"YELLOW SUBMARINE", 2), b"YELLOW SUBMARINE\x02\x02"
         )
+
+    def test_aligned_padding_bis(self):
+        self.assertEqual(
+            add_pkcs7_padding(b"YELLOW SUBMARINE", 16),
+            b"YELLOW SUBMARINE" + b"\x10" * 16,
+        )
+
+    def test_empty_padding(self):
+        self.assertEqual(add_pkcs7_padding(b"", 16), b"\x10" * 16)
 
     def test_nonzero_padding(self):
         self.assertEqual(
@@ -159,12 +165,17 @@ class TestChallenge15(unittest.TestCase):
     def test_padding_too_long(self):
         padded_data = b"x" + b"\x1f" * 31
         with self.assertRaises(ValueError):
-            _ = strip_pkc7_padding(padded_data, 16)
+            _ = strip_pkcs7_padding(padded_data, 16)
 
     def test_padding_wrong_value(self):
         padded_data = b"x" * 12 + b"\x04\x05\x04\x04"
         with self.assertRaises(ValueError):
-            _ = strip_pkc7_padding(padded_data, 16)
+            _ = strip_pkcs7_padding(padded_data, 16)
+
+    def test_valid_padding(self):
+        self.assertEqual(
+            strip_pkcs7_padding(b"ICE ICE BABY\x04\x04\x04\x04", 16), b"ICE ICE BABY"
+        )
 
 
 class TestChallenge16(unittest.TestCase):

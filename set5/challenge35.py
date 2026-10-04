@@ -1,7 +1,7 @@
 from random import randbytes
 
 from set2.challenge10 import decrypt_aes_128_cbc
-from set2.challenge15 import strip_pkc7_padding
+from set2.challenge15 import strip_pkcs7_padding
 from set5.challenge34 import dh_echo_bot, dh_party, int_to_16byte_key
 
 
@@ -10,7 +10,7 @@ def man_in_the_middle_inject_g(
 ) -> tuple[bytes, bytes, bytes]:
     def mitm_decrypt(message: bytes) -> bytes:
         iv, ciphertext = message[:16], message[16:]
-        return strip_pkc7_padding(decrypt_aes_128_cbc(iv, key, ciphertext), 16)
+        return strip_pkcs7_padding(decrypt_aes_128_cbc(iv, key, ciphertext), 16)
 
     message = randbytes(300)
     A, B = alice.get_public_key(), bot.get_public_key()

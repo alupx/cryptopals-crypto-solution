@@ -1,14 +1,14 @@
 from collections.abc import Callable
 
 from set2.challenge10 import decrypt_aes_128_cbc
-from set2.challenge15 import strip_pkc7_padding
+from set2.challenge15 import strip_pkcs7_padding
 
 
 def padding_oracle(iv: bytes, key: bytes, data: bytes) -> bool:
     # Returns true if data if plaintext is correctly padded after CBC decryption
     plaintext = decrypt_aes_128_cbc(iv, key, data)
     try:
-        _ = strip_pkc7_padding(plaintext, 16)
+        _ = strip_pkcs7_padding(plaintext, 16)
     except ValueError:
         return False
     return True

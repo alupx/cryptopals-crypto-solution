@@ -2,7 +2,7 @@ from random import randbytes
 
 from set2.challenge9 import add_pkcs7_padding
 from set2.challenge10 import decrypt_aes_128_cbc, encrypt_aes_128_cbc
-from set2.challenge15 import strip_pkc7_padding
+from set2.challenge15 import strip_pkcs7_padding
 from set4.challenge28 import sha1
 from set5.challenge33 import diffie_hellman
 
@@ -36,7 +36,7 @@ class dh_party:
 
     def decrypt(self, message: bytes) -> bytes:
         iv, ciphertext = message[:16], message[16:]
-        return strip_pkc7_padding(decrypt_aes_128_cbc(iv, self.key, ciphertext), 16)
+        return strip_pkcs7_padding(decrypt_aes_128_cbc(iv, self.key, ciphertext), 16)
 
 
 class dh_echo_bot(dh_party):
@@ -50,7 +50,7 @@ def man_in_the_middle(
 ) -> tuple[bytes, bytes, bytes]:
     def mitm_decrypt(message: bytes) -> bytes:
         iv, ciphertext = message[:16], message[16:]
-        return strip_pkc7_padding(decrypt_aes_128_cbc(iv, zero_key, ciphertext), 16)
+        return strip_pkcs7_padding(decrypt_aes_128_cbc(iv, zero_key, ciphertext), 16)
 
     message = randbytes(300)
     zero_key = int_to_16byte_key(0)

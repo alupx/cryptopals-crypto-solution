@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 from .challenge9 import add_pkcs7_padding
 from .challenge10 import decrypt_aes_128_ecb, encrypt_aes_128_ecb
-from .challenge15 import strip_pkc7_padding
+from .challenge15 import strip_pkcs7_padding
 
 
 def encode_profile(email: str, uid: int, role: str) -> str:
@@ -28,7 +28,7 @@ def provide_encrypted_profile(key: bytes, email: str):
 
 
 def decrypt_profile(key: bytes, ciphertext: bytes):
-    plaintext = strip_pkc7_padding(decrypt_aes_128_ecb(key, ciphertext), 16)
+    plaintext = strip_pkcs7_padding(decrypt_aes_128_ecb(key, ciphertext), 16)
     return plaintext
 
 
