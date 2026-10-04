@@ -1,4 +1,6 @@
+import random
 import unittest
+from itertools import product
 from random import randbytes
 
 from set5.challenge33 import diffie_hellman
@@ -6,6 +8,11 @@ from set5.challenge34 import dh_echo_bot, dh_party, man_in_the_middle
 from set5.challenge35 import man_in_the_middle_inject_g
 from set5.challenge36 import SrpClient, SrpServer
 from set5.challenge37 import break_srp_with_zero_key
+from set5.challenge38 import (
+    SrpClientSimplified,
+    SrpServerSimplified,
+    do_dictionary_attack_simplified_srp,
+)
 
 
 def _hex(s: str) -> int:
@@ -162,6 +169,24 @@ class TestChallenge37(unittest.TestCase):
             s = SrpServer(N, 2, 3, "p@sSw0rD!")
             h = break_srp_with_zero_key(s)
             self.assertTrue(s.check_validation_hmac(0, h))
+
+
+class TestChallenge38(unittest.TestCase):
+    def setUp(self):
+        words = ["espresso", "latte", "mocha", "ristretto", "flatwhite", "macchiato"]
+        self.password_dict = ["".join(pair) for pair in product(words, words)]
+
+    def _do_attack(self, N: int):
+        secret_password = random.choice(self.password_dict)
+        s = SrpServerSimplified(N, 2, 3, secret_password)
+        c = SrpClientSimplified(N, 2, 3, secret_password, s.salt)
+        h = c.get_validation_hmac(s.pub, s.u)
+        retrieved = do_dictionary_attack_simplified_srp(self.password_dict, s, c.pub, h)
+        self.assertEqual(retrieved, secret_password)
+
+    def test_dictionary_attack_simplified_srp(self):
+        for N in [FFDHE2048, FFDHE3072, FFDHE4096]:
+            self._do_attack(N)
 
 
 if __name__ == "__main__":
