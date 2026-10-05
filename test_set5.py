@@ -13,6 +13,7 @@ from set5.challenge38 import (
     SrpServerSimplified,
     do_dictionary_attack_simplified_srp,
 )
+from set5.challenge39 import rsa_keygen, rsa_process
 
 
 def _hex(s: str) -> int:
@@ -187,6 +188,22 @@ class TestChallenge38(unittest.TestCase):
     def test_dictionary_attack_simplified_srp(self):
         for N in [FFDHE2048, FFDHE3072, FFDHE4096]:
             self._do_attack(N)
+
+
+class TestChallenge39(unittest.TestCase):
+    def test_encryption_int(self):
+        private, public = rsa_keygen(3)
+        message = random.randint(1 << 128, 1 << 512)
+        ciphertext = rsa_process(message, public)
+        plaintext = rsa_process(ciphertext, private)
+        self.assertEqual(plaintext, message)
+
+    def test_encryption_bytes(self):
+        private, public = rsa_keygen(3)
+        message = random.randbytes(128)
+        ciphertext = rsa_process(message, public)
+        plaintext = rsa_process(ciphertext, private)
+        self.assertEqual(plaintext, message)
 
 
 if __name__ == "__main__":
