@@ -1,7 +1,7 @@
 import random
 import unittest
 from itertools import product
-from random import randbytes
+from random import randbytes, randint
 
 from set5.challenge33 import diffie_hellman
 from set5.challenge34 import dh_echo_bot, dh_party, man_in_the_middle
@@ -14,6 +14,7 @@ from set5.challenge38 import (
     do_dictionary_attack_simplified_srp,
 )
 from set5.challenge39 import rsa_keygen, rsa_process
+from set5.challenge40 import get_ciphertext, rsa_broadcast_attack
 
 
 def _hex(s: str) -> int:
@@ -204,6 +205,17 @@ class TestChallenge39(unittest.TestCase):
         ciphertext = rsa_process(message, public)
         plaintext = rsa_process(ciphertext, private)
         self.assertEqual(plaintext, message)
+
+
+class TestChallenge40(unittest.TestCase):
+    def _do_attack(self, k: int):
+        data = randint(1 << 128, 1 << 512)
+        getter = lambda: get_ciphertext(data, k)
+        self.assertEqual(data, rsa_broadcast_attack(getter, k))
+
+    def test_rsa_broadcast_attack(self):
+        for k in [3, 5, 7]:
+            self._do_attack(k)
 
 
 if __name__ == "__main__":

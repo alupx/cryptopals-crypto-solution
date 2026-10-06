@@ -1,3 +1,5 @@
+from typing import overload
+
 from sympy import randprime
 
 from set5.challenge36 import to_bytes
@@ -27,7 +29,11 @@ def rsa_keygen(e: int) -> tuple[tuple[int, int], tuple[int, int]]:
     return (d, n), (e, n)
 
 
-def rsa_process(data: int | bytes, key: tuple[int, int]):
+@overload
+def rsa_process(data: int, key: tuple[int, int]) -> int: ...
+@overload
+def rsa_process(data: bytes, key: tuple[int, int]) -> bytes: ...
+def rsa_process(data: int | bytes, key: tuple[int, int]) -> int | bytes:
     is_bytes = isinstance(data, bytes)
     if is_bytes:
         data_int = int("0x" + data.hex(), 16)
